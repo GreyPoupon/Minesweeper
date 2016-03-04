@@ -4,24 +4,28 @@ import de.bezier.guido.*;
 //Declare and initialize NUM_ROWS and NUM_COLS = 20
 private MSButton[][] buttons; //2d array of minesweeper buttons
 private ArrayList <MSButton> bombs; //ArrayList of just the minesweeper buttons that are mined
-
+// bombs = new ArrayList <MSButton>;
+private int gridSize = 20;
 void setup ()
 {
-    size(400, 400);
+    size(800, 800);
     textAlign(CENTER,CENTER);
-    
     // make the manager
     Interactive.make( this );
-    
+    buttons = new MSButton[gridSize][gridSize];
+    for(int r = 0; r < gridSize; r++)
+    {
+        for(int c = 0; c < gridSize; c++)
+            buttons[r][c] = new MSButton(r, c);
+    }
     //your code to declare and initialize buttons goes here
-    
-    
     
     setBombs();
 }
+
 public void setBombs()
 {
-    //your code
+    
 }
 
 public void draw ()
@@ -53,8 +57,8 @@ public class MSButton
     
     public MSButton ( int rr, int cc )
     {
-        // width = 400/NUM_COLS;
-        // height = 400/NUM_ROWS;
+        width = 40;
+        height = 40;
         r = rr;
         c = cc; 
         x = c*width;
@@ -75,8 +79,22 @@ public class MSButton
     
     public void mousePressed () 
     {
-        clicked = true;
-        //your code here
+        if(mouseButton == RIGHT && !marked && !clicked)
+            marked = true;
+        else if(mouseButton == RIGHT && marked && !clicked)
+            marked = false;
+        if(mouseButton == LEFT && !marked && !clicked)
+        {
+            clicked = true;
+            if(isValid(r, c-1) && !buttons[r][c-1].isMarked())
+                buttons[r][c-1].mousePressed();
+            if(isValid(r, c+1) && !buttons[r][c+1].isMarked())
+                buttons[r][c+1].mousePressed();
+            if(isValid(r-1, c) && !buttons[r-1][c].isMarked())
+                buttons[r-1][c].mousePressed();
+            if(isValid(r+1, c) && !buttons[r+1][c].isMarked())
+                buttons[r+1][c].mousePressed();
+        }
     }
 
     public void draw () 
@@ -86,13 +104,13 @@ public class MSButton
         // else if( clicked && bombs.contains(this) ) 
         //     fill(255,0,0);
         else if(clicked)
-            fill( 200 );
+            fill(200);
         else 
-            fill( 100 );
+            fill(50);
 
         rect(x, y, width, height);
         fill(0);
-        text(label,x+width/2,y+height/2);
+        text(label, x + width/2, y + height/2);
     }
     public void setLabel(String newLabel)
     {
@@ -100,7 +118,8 @@ public class MSButton
     }
     public boolean isValid(int r, int c)
     {
-        //your code here
+        if(r >= 0 && r < gridSize && c >= 0 && c < gridSize)
+            return true;
         return false;
     }
     public int countBombs(int row, int col)
